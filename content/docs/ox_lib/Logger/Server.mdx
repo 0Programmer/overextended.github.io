@@ -110,3 +110,41 @@ You'll need to create a new token with the type `Logs`.
 set ox:logger "fivemanage"
 set fivemanage:key "YOUR_API_KEY"
 ```
+
+## VictoriaLogs
+
+[VictoriaLogs](https://docs.victoriametrics.com/victorialogs/) is a self-hosted log storage system.
+
+### Download and start [step]
+
+Download the executable for your operating system and architecture from the [VictoriaLogs releases](https://github.com/VictoriaMetrics/VictoriaLogs/releases). Put it in a dedicated folder and create a startup script or service for your operating system. Start the executable with these flags:
+
+```text
+-storageDataPath=./victoria-logs-data
+-retentionPeriod=8760h
+-httpAuth.username=username
+-httpAuth.password=password
+```
+
+Replace `username` and `password` with your own credentials. The relative storage path creates the `victoria-logs-data` folder inside the directory from which VictoriaLogs is started. The `8760h` retention setting keeps logs for approximately one year. See the [VictoriaLogs retention documentation](https://docs.victoriametrics.com/victorialogs/#retention) for details.
+
+This configuration assumes VictoriaLogs and FXServer run on the same machine. Basic Auth over HTTP sends credentials unencrypted, so use HTTPS when requests cross an untrusted network; see the [VictoriaLogs security documentation](https://docs.victoriametrics.com/victorialogs/security-and-lb/#basic-auth).
+
+You can open the VictoriaLogs UI `http://127.0.0.1:9428/select/vmui/` after starting the service.
+
+### Config [step]
+
+Use the following convars to set your logging service, endpoint, and authentication details.
+
+```bash
+set ox:logger "victorialogs"
+set victorialogs:endpoint "http://127.0.0.1:9428"
+set victorialogs:user "username"
+set victorialogs:password "password"
+```
+
+The `includeserver` convar is optional and defaults to `true`. Set it to `false` to exclude the server name from stream grouping.
+
+```bash
+set victorialogs:includeserver false
+```
